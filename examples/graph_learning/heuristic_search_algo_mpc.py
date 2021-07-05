@@ -76,7 +76,7 @@ def predict_batch(V, states):
         adj_matrix = torch.tensor(adj_matrix_np)
         features = torch.tensor(features_np)
         masks = torch.tensor(masks_np)
-        output, _, _ = V(features, adj_matrix, masks)               # carry out value prediction using tensors
+        output, _, _ = V(features, adj_matrix, masks)               # carry out value prediction using tensors on V function
     return output[:, 0].detach().numpy()
 
 def select_action(env, V, state, eps):
