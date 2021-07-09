@@ -2,6 +2,7 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
+#include <vector>
 
 namespace robot_design {
 
@@ -18,5 +19,6 @@ using Quaternion = Eigen::Quaternion<Scalar>;
 using Affine3 = Eigen::Transform<Scalar, 3, Eigen::Affine>;
 using Translation3 = Eigen::Translation<Scalar, 3>;
 using Color = Eigen::Vector3f;
+using Functions = std::vector<string>;
 
 } // namespace robot_design

@@ -1,0 +1,365 @@
+digraph initialize {
+  subgraph L {
+    machine [require_label="machine"];
+  }
+
+  subgraph R {
+    head [label="head"];
+    body [label="body"];
+    tail [label="tail"];
+    head -> body [label="linkage"];
+    body -> tail [label="linkage"];
+  }
+}
+
+digraph append_body {
+  subgraph L {
+    tail [require_label="tail"];
+    parent -> tail [id="parent_edges"];
+  }
+
+  subgraph R {
+    tail [label="tail"];
+    body [label="body"];
+    parent -> body [id="parent_edges"];
+    body -> tail [label="linkage"];
+  }
+}
+
+digraph end_tail {
+  subgraph L {
+    tail [require_label="tail"];
+    parent -> tail;
+  }
+
+  subgraph R {
+    parent;
+  }
+}
+
+digraph end_head {
+  subgraph L {
+    head [require_label="head"];
+    head -> child;
+  }
+
+  subgraph R {
+    child;
+  }
+}
+
+digraph make_milling {
+  subgraph L {
+    body [require_label="body"];
+  }
+  subgraph R {
+    body [label="mill"];
+  }
+}
+
+digraph make_turning {
+  subgraph L {
+    body [require_label="body"];
+  }
+  subgraph R {
+    body [label="lathe"];
+  }
+}
+
+digraph make_honing {
+  subgraph L {
+    body [require_label="body"];
+  }
+  subgraph R {
+    body [label="honing"];
+  }
+}
+
+digraph make_broaching {
+  subgraph L {
+    body [require_label="body"];
+  }
+  subgraph R {
+    body [label="broach"];
+  }
+}
+
+digraph make_sawing {
+  subgraph L {
+    body [require_label="body"];
+  }
+  subgraph R {
+    body [label="saw"];
+  }
+}
+
+digraph make_i630V {
+  subgraph L {
+    body [require_label="mill"];
+  }
+  subgraph R {
+    body [function="milling boring drilling", diameter=1050, length=1000, xyz="1425 1050 1050",
+                    speed=10000];
+  }
+}
+
+digraph make_1850V {
+  subgraph L {
+    body [require_label="mill"];
+  }
+  subgraph R {
+    body [function="milling boring drilling", diameter=1050, length=1000, xyz="1425 1050 1050",
+                    speed=10000];
+  }
+}
+
+digraph make_j200 {
+  subgraph L {
+    body [require_label="mill"];
+  }
+  subgraph R {
+    body [function="milling boring drilling", diameter=530, length=500, xyz="450 200 550",
+                    speed=12000];
+  }
+}
+
+digraph make_FJV250 {
+  subgraph L {
+    body [require_label="mill"];
+  }
+  subgraph R {
+    body [function="milling grinding drilling", length=1200, xyz="1020 510 460",
+                    speed=18000];
+  }
+}
+
+digraph make_SQT18MS {
+  subgraph L {
+    body [require_label="lathe"];
+  }
+  subgraph R {
+    body [function="turning grinding reaming grooving", diameter=300, length=870, xyz="180 0 580",
+                    speed=4000];
+  }
+}
+
+digraph make_QT200 {
+  subgraph L {
+    body [require_label="lathe"];
+  }
+  subgraph R {
+    body [function="turning drilling reaming grooving", diameter=360, length=611, xyz="190 535 550",
+                    speed=5000];
+  }
+}
+
+digraph make_SV30 {
+  subgraph L {
+    body [require_label="honing"];
+  }
+  subgraph R {
+    body [function="honing", length=1219, xyz="813 0 705",
+                    speed=600];
+  }
+}
+
+digraph make_BM25 {
+  subgraph L {
+    body [require_label="broach"];
+  }
+  subgraph R {
+    body [function="braoching", diameter=600, length=420, xyz="0 0 600",
+                    speed=1440];
+  }
+}
+
+digraph make_330CS {
+  subgraph L {
+    body [require_label="saw"];
+  }
+  subgraph R {
+    body [function="sawing", diameter=325, length=330, xyz="0 0 845",
+                    speed=10000];
+  }
+}
+
+
+
+
+
+
+
+
+
+digraph make_body_with_legs {
+  subgraph L {
+    body [require_label="body"];
+  }
+
+  subgraph R {
+    body [shape=capsule, length=0.15, radius=0.045, density=3.0];
+    limb_mount [shape=capsule, length=0.1, radius=0.025];
+    limb_link [label="limb_link"];
+    limb [label="limb"];
+    body -> limb_mount [type=fixed, offset=0.5, axis_angle="0 1 0 90"];
+    body -> limb_mount [type=fixed, offset=0.5, axis_angle="0 1 0 90",
+                             mirror=true];
+    limb_mount -> limb_link [label="limb_joint"];
+    limb_link -> limb;
+  }
+}
+
+digraph make_body_without_legs {
+  subgraph L {
+    body [require_label="body"];
+  }
+
+  subgraph R {
+    body [shape=capsule, length=0.15, radius=0.045, density=3.0];
+  }
+}
+
+digraph append_limb_link {
+  subgraph L {
+    limb [require_label="limb"];
+    parent -> limb;
+  }
+
+  subgraph R {
+    limb [label="limb"];
+    limb_link [label="limb_link"];
+    parent -> limb_link [label="limb_joint"];
+    limb_link -> limb;
+  }
+}
+
+digraph end_limb {
+  subgraph L {
+    limb [require_label="limb"];
+    parent -> limb;
+  }
+
+  subgraph R {
+    parent;
+  }
+}
+
+digraph make_normal_limb_link {
+  subgraph L {
+    limb_link [require_label="limb_link"];
+  }
+
+  subgraph R {
+    limb_link [shape=capsule, length=0.1, radius=0.025];
+  }
+}
+
+digraph make_long_limb_link {
+  subgraph L {
+    limb_link [require_label="limb_link"];
+  }
+
+  subgraph R {
+    limb_link [shape=capsule, length=0.15, radius=0.025];
+  }
+}
+
+digraph make_fixed_body_joint {
+  subgraph L {
+    parent -> child [require_label="body_joint"];
+  }
+
+  subgraph R {
+    parent -> child [type=fixed];
+  }
+}
+
+digraph make_roll_body_joint {
+  subgraph L {
+    parent -> child [require_label="body_joint"];
+  }
+
+  subgraph R {
+    parent -> child [type=hinge, joint_axis="1 0 0"];
+  }
+}
+
+digraph make_swing_body_joint {
+  subgraph L {
+    parent -> child [require_label="body_joint"];
+  }
+
+  subgraph R {
+    parent -> child [type=hinge, joint_axis="0 1 0", color="0 0.5 0"];
+  }
+}
+
+digraph make_lift_body_joint {
+  subgraph L {
+    parent -> child [require_label="body_joint"];
+  }
+
+  subgraph R {
+    parent -> child [type=hinge, joint_axis="0 0 1"];
+  }
+}
+
+digraph make_left_roll_limb_joint {
+  subgraph L {
+    parent -> child [require_label="limb_joint"];
+  }
+
+  subgraph R {
+    parent -> child [type=hinge, axis_angle="0 1 0 -90", joint_axis="1 0 0"];
+  }
+}
+
+digraph make_right_roll_limb_joint {
+  subgraph L {
+    parent -> child [require_label="limb_joint"];
+  }
+
+  subgraph R {
+    parent -> child [type=hinge, axis_angle="0 1 0 90", joint_axis="1 0 0"];
+  }
+}
+
+digraph make_swing_limb_joint {
+  subgraph L {
+    parent -> child [require_label="limb_joint"];
+  }
+
+  subgraph R {
+    parent -> child [type=hinge, joint_axis="0 1 0", color="0 0.5 0"];
+  }
+}
+
+digraph make_acute_lift_limb_joint {
+  subgraph L {
+    parent -> child [require_label="limb_joint"];
+  }
+
+  subgraph R {
+    parent -> child [type=hinge, axis_angle="0 0 1 120", joint_axis="0 0 1"];
+  }
+}
+
+digraph make_obtuse_lift_limb_joint {
+  subgraph L {
+    parent -> child [require_label="limb_joint"];
+  }
+
+  subgraph R {
+    parent -> child [type=hinge, axis_angle="0 0 1 60", joint_axis="0 0 1"];
+  }
+}
+
+digraph make_backwards_lift_limb_joint {
+  subgraph L {
+    parent -> child [require_label="limb_joint"];
+  }
+
+  subgraph R {
+    parent -> child [type=hinge, axis_angle="0 0 1 -60", joint_axis="0 0 1"];
+  }
+}

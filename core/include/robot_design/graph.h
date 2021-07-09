@@ -25,27 +25,42 @@ struct NodeAttributes {
   NodeAttributes(const std::string &label) : label_(label) {}
 
   std::string label_ = "";
-  LinkShape shape_ = LinkShape::NONE;
+  Functions function_;                  // Define the function of the machine
+  Scalar max_diameter_ = 0.0;           // Max diameter of job
+  Scalar max_length_ = 0.0;             // Max length of job
+  Vector3 XYZ_travel_ = { 0.0, 0.0, 0.0 };  // Max traversal of tool
+  Scalar max_feed_rate_ = 0.0;          // Needed??
+  Scalar max_spindle_speed_ = 0.0;      // Max spindle speed
+  bool is_available_ = false;           // Currently being used or not
+  Scalar index_ = 0.0;                  // Machine number
+  Scalar programming_time_ = 0.0;       // Time taken to program CNC
+  bool finishing_ = false;              // Used for roughing or finishing
+  std::string require_label_ = "";      // Used for rule matching
+
+  /*LinkShape shape_ = LinkShape::NONE;
   Scalar length_ = 1.0;
   Scalar radius_ = 0.05;
   Scalar density_ = 1.0;
   Scalar friction_ = 0.9;
   bool base_ = false;
   Color color_ = {0.45f, 0.5f, 0.55f}; // Slate gray
-  std::string require_label_ = "";     // Only used for rule matching
+  std::string require_label_ = "";     // Only used for rule matching*/
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
   template <typename Visitor, typename... Args>
   static void accept(Visitor &&visit, Args &&... args) {
     visit(std::forward<Args>(args).label_...);
-    visit(std::forward<Args>(args).shape_...);
-    visit(std::forward<Args>(args).length_...);
-    visit(std::forward<Args>(args).radius_...);
-    visit(std::forward<Args>(args).density_...);
-    visit(std::forward<Args>(args).friction_...);
-    visit(std::forward<Args>(args).base_...);
-    visit(std::forward<Args>(args).color_...);
+    visit(std::forward<Args>(args).function_...);
+    visit(std::forward<Args>(args).max_diameter_...);
+    visit(std::forward<Args>(args).max_length_...);
+    visit(std::forward<Args>(args).XYZ_travel_...);
+    visit(std::forward<Args>(args).max_feed_rate_...);
+    visit(std::forward<Args>(args).max_spindle_speed_...);
+    visit(std::forward<Args>(args).is_available_...);
+    visit(std::forward<Args>(args).index_...);
+    visit(std::forward<Args>(args).programming_time_...);
+    visit(std::forward<Args>(args).finishing_...);
     visit(std::forward<Args>(args).require_label_...);
   }
 };
