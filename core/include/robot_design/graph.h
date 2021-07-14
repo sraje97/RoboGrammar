@@ -28,11 +28,11 @@ struct NodeAttributes {
   Operations function_;                 // Define the function of the machine
   Scalar max_diameter_ = 0.0;           // Max diameter of job
   Scalar max_length_ = 0.0;             // Max length of job
-  Vector3 XYZ_travel_ = { 0.0, 0.0, 0.0 };  // Max traversal of tool
+  Vector3 xyz_travel_ = { 0.0, 0.0, 0.0 };  // Max traversal of tool
   Scalar max_feed_rate_ = 0.0;          // Needed??
   Scalar max_spindle_speed_ = 0.0;      // Max spindle speed
   bool is_available_ = false;           // Currently being used or not
-  Scalar index_ = 0.0;                  // Machine number
+  Scalar mach_num_ = 0.0;               // Machine number
   Scalar programming_time_ = 0.0;       // Time taken to program CNC
   bool finishing_ = false;              // Used for roughing or finishing
   std::string require_label_ = "";      // Used for rule matching
@@ -54,11 +54,11 @@ struct NodeAttributes {
     visit(std::forward<Args>(args).function_...);
     visit(std::forward<Args>(args).max_diameter_...);
     visit(std::forward<Args>(args).max_length_...);
-    visit(std::forward<Args>(args).XYZ_travel_...);
+    visit(std::forward<Args>(args).xyz_travel_...);
     visit(std::forward<Args>(args).max_feed_rate_...);
     visit(std::forward<Args>(args).max_spindle_speed_...);
     visit(std::forward<Args>(args).is_available_...);
-    visit(std::forward<Args>(args).index_...);
+    visit(std::forward<Args>(args).mach_num_...);
     visit(std::forward<Args>(args).programming_time_...);
     visit(std::forward<Args>(args).finishing_...);
     visit(std::forward<Args>(args).require_label_...);
@@ -166,7 +166,7 @@ void updateEdgeAttributes(
     EdgeAttributes &edge_attrs,
     const std::vector<std::pair<std::string, std::string>> &attr_list);
 
-std::ostream &operator<<(std::ostream &out, const Node &node);
+std::ostream &operator<<(std::ostream &out, const Node &node);      // Write node object to ostream
 
 std::ostream &operator<<(std::ostream &out, const Edge &edge);
 
@@ -197,7 +197,7 @@ namespace std {
 
 template <> struct hash<robot_design::NodeAttributes> {
   std::size_t operator()(const robot_design::NodeAttributes &node_attrs) const {
-    using robot_design::hashCombine;
+    using robot_design::hashCombine;            // hashCombine is defined in utils.h
 
     std::size_t seed = 0;
     robot_design::NodeAttributes::accept(

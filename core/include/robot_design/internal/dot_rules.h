@@ -11,11 +11,11 @@ namespace dot_rules {
 using namespace tao::pegtl;
 
 // Character classes
-struct ws : one<' ', '\t', '\r', '\n'> {};
-struct string_first : sor<alpha, range<'\200', '\377'>, one<'_'>> {};
-struct string_other : sor<string_first, digit> {};
+struct ws : one<' ', '\t', '\r', '\n'> {};                                          // Whitespace characters
+struct string_first : sor<alpha, range<'\200', '\377'>, one<'_'>> {};               // String characters (alphabet | ones with accent | _)
+struct string_other : sor<string_first, digit> {};                                  // Other strings can be as above | digit
 
-// Keywords
+// Keywords Note: Istring means case insensitive
 struct kw_node : seq<TAO_PEGTL_ISTRING("node"), not_at<string_other>> {};
 struct kw_edge : seq<TAO_PEGTL_ISTRING("edge"), not_at<string_other>> {};
 struct kw_graph : seq<TAO_PEGTL_ISTRING("graph"), not_at<string_other>> {};
@@ -23,18 +23,18 @@ struct kw_digraph : seq<TAO_PEGTL_ISTRING("digraph"), not_at<string_other>> {};
 struct kw_subgraph : seq<TAO_PEGTL_ISTRING("subgraph"), not_at<string_other>> {};
 struct kw_strict : seq<TAO_PEGTL_ISTRING("strict"), not_at<string_other>> {};
 struct keyword
-    : sor<kw_node, kw_edge, kw_graph, kw_digraph, kw_subgraph, kw_strict> {};
+    : sor<kw_node, kw_edge, kw_graph, kw_digraph, kw_subgraph, kw_strict> {};       // keyword can be any of the above (i.e. "n" "o" "d" "e")
 
 // ID
-struct idstring : seq<not_at<keyword>, string_first, star<string_other>> {};
+struct idstring : seq<not_at<keyword>, string_first, star<string_other>> {};        // idstring is !keyword string strings(0+)
 struct numeral
     : seq<opt<one<'-'>>, sor<seq<one<'.'>, plus<digit>>,
-                             seq<plus<digit>, opt<one<'.'>, star<digit>>>>> {};
-struct dqstring_content : until<at<one<'"'>>, sor<string<'\\', '"'>, any>> {};
-struct dqstring : seq<one<'"'>, must<dqstring_content>, any> {
+                             seq<plus<digit>, opt<one<'.'>, star<digit>>>>> {};     // numeral is [-] [.|digit] digits(1+) [.] digits(0+)
+struct dqstring_content : until<at<one<'"'>>, sor<string<'\\', '"'>, any>> {};      // matches backslash or double apost. until second "
+struct dqstring : seq<one<'"'>, must<dqstring_content>, any> {                      // has " and must have as above and then anything after
   using content = dqstring_content;
 };
-struct id : sor<idstring, numeral, dqstring> {};
+struct id : sor<idstring, numeral, dqstring> {};                                    // id is one of idstring, numeral, dqstring
 
 // Operators and comments
 struct edge_op : sor<string<'-', '>'>, string<'-', '-'>> {};

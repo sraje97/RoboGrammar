@@ -16,59 +16,44 @@ enum class JointType : Index { NONE, FREE, HINGE, FIXED };
 enum class JointControlMode : Index { POSITION, VELOCITY };
 
 struct Link {
-  Link(Index parent, JointType joint_type, Scalar joint_pos,
-       const Quaternion &joint_rot, const Vector3 &joint_axis, LinkShape shape,
-       Scalar length, Scalar radius, Scalar density, Scalar friction,
-       Scalar joint_kp, Scalar joint_kd, Scalar joint_torque,
-       JointControlMode joint_control_mode, const Color &color,
-       const Color &joint_color, const std::string &label,
-       const std::string &joint_label)
-      : parent_(parent), joint_type_(joint_type), joint_pos_(joint_pos),
-        joint_rot_(joint_rot), joint_axis_(joint_axis), shape_(shape),
-        length_(length), radius_(radius), density_(density),
-        friction_(friction), joint_kp_(joint_kp), joint_kd_(joint_kd),
-        joint_torque_(joint_torque), joint_control_mode_(joint_control_mode),
-        color_(color), joint_color_(joint_color), label_(label),
-        joint_label_(joint_label) {}
+    Link(Index parent, Operations function, Scalar max_diameter, Scalar max_length,
+        const Vector3& xyz_travel, Scalar max_feed_rate, Scalar max_spindle_speed,
+        bool is_available, Scalar mach_num, Scalar programming_time, bool finishing,
+        Scalar logistic_time, const std::string& label, const std::string& joint_label)
+        : parent_(parent), function_(function), max_diameter_(max_diameter),
+        max_length_(max_length), xyz_travel_(xyz_travel), max_feed_rate_(max_feed_rate),
+        max_spindle_speed_(max_spindle_speed), is_available_(is_available),
+        mach_num_(mach_num), programming_time_(programming_time), finishing_(finishing),
+        logistic_time_(logistic_time), label_(label), joint_label_(joint_label) {}
 
-  // Parent link index (-1 for base link)
-  Index parent_;
-  // Joint type
-  JointType joint_type_;
-  // Joint position on parent link (0 = beginning, 1 = end)
-  Scalar joint_pos_;
-  // Joint rotation relative to parent link
-  Quaternion joint_rot_;
-  // Joint axis relative to the joint frame (defined by previous 3 parameters)
-  Vector3 joint_axis_;
-  // Link shape
-  LinkShape shape_;
-  // Link length
-  Scalar length_;
-  // Link radius
-  Scalar radius_;
-  // Link density
-  Scalar density_; // Mass per unit of length
-  // Link friction
-  Scalar friction_;
-  // Joint spring constant
-  Scalar joint_kp_;
-  // Joint damping coefficient
-  Scalar joint_kd_;
-  // Joint maximum torque
-  Scalar joint_torque_;
-  // Joint control mode
-  JointControlMode joint_control_mode_;
-  // Link color for rendering
-  Color color_;
-  // Joint color for rendering
-  Color joint_color_;
-  // Link label for rendering
-  std::string label_;
-  // Joint label for rendering
-  std::string joint_label_;
+    // Parent link index (-1 for base link)
+    Index parent_;
+    // Operations machine can do
+    Operations function_;
+    // Maximum diameter of job machine can take
+    Scalar max_diameter_;
+    // Maximum length of job machine can take
+    Vector3 xyz_travel_;
+    // Maximum feed rate of machine
+    Scalar max_feed_rate_;
+    // Maximum spindle rate of machine
+    Scalar max_spindle_speed_;
+    // Machine's availability
+    bool is_available_;
+    // Machine number
+    Scalar mach_num_;
+    // Time taken to program job (CNC Only)
+    Scalar programming_time_;
+    // Roughing vs Finishing job
+    bool finishing_;
+    // Time taken to transport between machines
+    Scalar logistic_time_;
+    // Machine label
+    std::string label_;
+    // Link label
+    std::string joint_label_;
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 };
 
 struct Robot {
@@ -78,7 +63,8 @@ struct Robot {
 } // namespace robot_design
 
 namespace std {
-
+/*
+// Return hash values of enum types for those unordered containers mentioned below
 template <> struct hash<robot_design::LinkShape> {
   std::size_t operator()(const robot_design::LinkShape &link_shape) const {
     using type = typename std::underlying_type<robot_design::LinkShape>::type;
@@ -99,5 +85,5 @@ template <> struct hash<robot_design::JointControlMode> {
     return std::hash<type>()(static_cast<type>(joint_control_mode));
   }
 };
-
+*/
 } // namespace std
