@@ -19,6 +19,6 @@ using Quaternion = Eigen::Quaternion<Scalar>;
 using Affine3 = Eigen::Transform<Scalar, 3, Eigen::Affine>;
 using Translation3 = Eigen::Translation<Scalar, 3>;
 using Color = Eigen::Vector3f;
-using Functions = std::vector<string>;
+using Operations = std::vector<string>;
 
 } // namespace robot_design

@@ -25,7 +25,7 @@ struct NodeAttributes {
   NodeAttributes(const std::string &label) : label_(label) {}
 
   std::string label_ = "";
-  Functions function_;                  // Define the function of the machine
+  Operations function_;                 // Define the function of the machine
   Scalar max_diameter_ = 0.0;           // Max diameter of job
   Scalar max_length_ = 0.0;             // Max length of job
   Vector3 XYZ_travel_ = { 0.0, 0.0, 0.0 };  // Max traversal of tool
@@ -77,7 +77,8 @@ struct EdgeAttributes {
 
   std::string id_ = "";
   std::string label_ = "";
-  JointType joint_type_ = JointType::NONE;
+  Scalar logistic_time_ = 0.0;
+  /*JointType joint_type_ = JointType::NONE;
   Scalar joint_pos_ = 1.0;
   Quaternion joint_rot_ = Quaternion::Identity();
   Vector3 joint_axis_ = Vector3::UnitZ();
@@ -89,7 +90,7 @@ struct EdgeAttributes {
   JointControlMode joint_control_mode_ = JointControlMode::POSITION;
   Scalar scale_ = 1.0;
   bool mirror_ = false;
-  Color color_ = {1.0f, 0.5f, 0.3f}; // Coral
+  Color color_ = {1.0f, 0.5f, 0.3f}; // Coral*/
   std::string require_label_ = "";   // Only used for rule matching
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
@@ -98,7 +99,8 @@ struct EdgeAttributes {
   static void accept(Visitor &&visit, Args &&... args) {
     visit(std::forward<Args>(args).id_...);
     visit(std::forward<Args>(args).label_...);
-    visit(std::forward<Args>(args).joint_type_...);
+    visit(std::forward<Args>(args).logistic_time_...);
+    /*visit(std::forward<Args>(args).joint_type_...);
     visit(std::forward<Args>(args).joint_pos_...);
     visit(std::forward<Args>(args).joint_rot_...);
     visit(std::forward<Args>(args).joint_axis_...);
@@ -110,7 +112,7 @@ struct EdgeAttributes {
     visit(std::forward<Args>(args).joint_control_mode_...);
     visit(std::forward<Args>(args).scale_...);
     visit(std::forward<Args>(args).mirror_...);
-    visit(std::forward<Args>(args).color_...);
+    visit(std::forward<Args>(args).color_...);*/
     visit(std::forward<Args>(args).require_label_...);
   }
 };

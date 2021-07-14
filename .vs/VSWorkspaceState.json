@@ -3,14 +3,11 @@
     "",
     "\\core",
     "\\core\\include",
-    "\\core\\include\\robot_design",
-    "\\core\\include\\robot_design\\internal",
-    "\\extern",
-    "\\extern\\PEGTL",
-    "\\extern\\PEGTL\\include",
-    "\\extern\\PEGTL\\include\\tao",
-    "\\extern\\PEGTL\\include\\tao\\pegtl"
+    "\\core\\src",
+    "\\examples",
+    "\\examples\\design_search",
+    "\\examples\\graph_learning"
   ],
-  "SelectedNode": "\\extern\\PEGTL\\include\\tao\\pegtl\\apply_mode.hpp",
+  "SelectedNode": "\\core\\src\\graph_build.cpp",
   "PreviewInSolutionExplorer": false
 }
