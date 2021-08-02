@@ -48,8 +48,15 @@ struct State {
   std::unordered_map<std::string, NodeIndex> node_indices_;
 };
 
+// Primary action class template
 template <typename Rule> struct dot_action : tao::pegtl::nothing<Rule> {};
 
+// Note: Difference between apply & apply0 is former can have empty
+// input latter should have at least one input
+
+// Specialise the action class template
+
+// Store the id string as state's id
 template <> struct dot_action<dot_rules::idstring> {
   template <typename Input>
   static void apply(const Input &input, State &state) {
@@ -57,6 +64,7 @@ template <> struct dot_action<dot_rules::idstring> {
   }
 };
 
+// Store the numeral as state's id
 template <> struct dot_action<dot_rules::numeral> {
   template <typename Input>
   static void apply(const Input &input, State &state) {
@@ -64,6 +72,7 @@ template <> struct dot_action<dot_rules::numeral> {
   }
 };
 
+// Store the dqstring as state's id
 template <> struct dot_action<dot_rules::dqstring::content> {
   template <typename Input>
   static void apply(const Input &input, State &state) {
@@ -71,8 +80,11 @@ template <> struct dot_action<dot_rules::dqstring::content> {
   }
 };
 
+// Copies parent_subgraph_state's attributes to newly created
+// child subgraph_state for beginning a subgraph
 template <> struct dot_action<dot_rules::begin_subgraph> {
   static void apply0(State &state) {
+    // calls state's default construct - to create default state.subgraph_states
     state.subgraph_states_.emplace_back();
     // Get the second to last element
     // Need to do this after emplace_back, since the vector can resize
@@ -86,6 +98,9 @@ template <> struct dot_action<dot_rules::begin_subgraph> {
   }
 };
 
+// Attempts to find the subgraph in vector of subgraphs,
+// if already exists then copy name into existing subgraph
+// or move name into new subgraph
 template <> struct dot_action<dot_rules::subgraph_id> {
   static void apply0(State &state) {
     SubgraphState &subgraph_state = state.subgraph_states_.back();
@@ -100,6 +115,9 @@ template <> struct dot_action<dot_rules::subgraph_id> {
   }
 };
 
+// Attempts to find the subgraph in vector of subgraphs,
+// if it already exists, update it with the new result
+// else, add a new subgraph and push_back the result and add mapping name-index
 template <> struct dot_action<dot_rules::subgraph> {
   static void apply0(State &state) {
     SubgraphState &subgraph_state = state.subgraph_states_.back();
@@ -125,6 +143,7 @@ template <> struct dot_action<dot_rules::subgraph> {
   }
 };
 
+// Copies current node attributes to new node state with name as ""
 template <> struct dot_action<dot_rules::begin_node_stmt> {
   static void apply0(State &state) {
     SubgraphState &subgraph_state = state.subgraph_states_.back();
@@ -134,6 +153,9 @@ template <> struct dot_action<dot_rules::begin_node_stmt> {
   }
 };
 
+// Attempts to find the node in vector of nodes,
+// if already exists then copy name into existing node
+// else move name into new node
 template <> struct dot_action<dot_rules::node_id> {
   static void apply0(State &state) {
     NodeState &node_state = state.node_states_.back();
@@ -148,6 +170,10 @@ template <> struct dot_action<dot_rules::node_id> {
   }
 };
 
+// Attempts to find node in vector of nodes,
+// if exists, then update node's result
+// else, add a new node to the results vector and then saves its result
+// then add the node to all its containing subgraphs
 template <> struct dot_action<dot_rules::node_stmt> {
   static void apply0(State &state) {
     NodeState &node_state = state.node_states_.back();
@@ -177,10 +203,14 @@ template <> struct dot_action<dot_rules::node_stmt> {
   }
 };
 
+// Inherit similar functionality for edge_node_stmt as node_stmt
 template <>
 struct dot_action<dot_rules::edge_node_stmt>
     : dot_action<dot_rules::node_stmt> {};
 
+// If not the first argument, create edge from every node in previous
+// arguments to this node using current edge attribute values
+// Store the latest argument
 template <> struct dot_action<dot_rules::edge_node_arg> {
   static void apply0(State &state) {
     EdgeState &edge_state = state.edge_states_.back();
@@ -202,6 +232,7 @@ template <> struct dot_action<dot_rules::edge_node_arg> {
   }
 };
 
+// Do similar as with edge_node_arg action
 template <> struct dot_action<dot_rules::edge_subgraph_arg> {
   static void apply0(State &state) {
     EdgeState &edge_state = state.edge_states_.back();
@@ -229,10 +260,13 @@ template <> struct dot_action<dot_rules::edge_subgraph_arg> {
   }
 };
 
+// Create a default edge_state object at the end of the vector
 template <> struct dot_action<dot_rules::begin_edge_stmt> {
   static void apply0(State &state) { state.edge_states_.emplace_back(); }
 };
 
+// Add new edges to results vector of state.results_.edges
+// and add them to their containing subgraphs.results_ as well
 template <> struct dot_action<dot_rules::edge_stmt> {
   static void apply0(State &state) {
     EdgeState &edge_state = state.edge_states_.back();
@@ -255,22 +289,26 @@ template <> struct dot_action<dot_rules::edge_stmt> {
   }
 };
 
+// Empty the attributes list of the state (new list)
 template <> struct dot_action<dot_rules::begin_attr_list> {
   static void apply0(State &state) { state.attr_list_.clear(); }
 };
 
+// Move the state's id into state's attribute key
 template <> struct dot_action<dot_rules::a_list_key> {
   static void apply0(State &state) {
     state.attr_key_ = std::move(state.id_content_);
   }
 };
 
+// Move the state's id into state's attribute value
 template <> struct dot_action<dot_rules::a_list_value> {
   static void apply0(State &state) {
     state.attr_value_ = std::move(state.id_content_);
   }
 };
 
+// Create and move state's key & value to state's attibute list
 template <> struct dot_action<dot_rules::a_list_item> {
   static void apply0(State &state) {
     state.attr_list_.emplace_back(std::move(state.attr_key_),
@@ -278,6 +316,7 @@ template <> struct dot_action<dot_rules::a_list_item> {
   }
 };
 
+// Update the current node's attributes using state's attributes
 template <> struct dot_action<dot_rules::node_attr_list> {
   static void apply0(State &state) {
     NodeState &node_state = state.node_states_.back();
@@ -286,6 +325,7 @@ template <> struct dot_action<dot_rules::node_attr_list> {
   }
 };
 
+// Update all the current edge's attributes
 template <> struct dot_action<dot_rules::edge_attr_list> {
   static void apply0(State &state) {
     EdgeState &edge_state = state.edge_states_.back();
@@ -296,6 +336,7 @@ template <> struct dot_action<dot_rules::edge_attr_list> {
   }
 };
 
+// Update current node's attributes with default values
 template <> struct dot_action<dot_rules::node_def_attr_list> {
   static void apply0(State &state) {
     SubgraphState &subgraph_state = state.subgraph_states_.back();
@@ -304,6 +345,7 @@ template <> struct dot_action<dot_rules::node_def_attr_list> {
   }
 };
 
+// Update current subgraph's edge attributes with default values
 template <> struct dot_action<dot_rules::edge_def_attr_list> {
   static void apply0(State &state) {
     SubgraphState &subgraph_state = state.subgraph_states_.back();
@@ -312,6 +354,7 @@ template <> struct dot_action<dot_rules::edge_def_attr_list> {
   }
 };
 
+// Update the name of the state using the id
 template <> struct dot_action<dot_rules::graph_id> {
   static void apply0(State &state) {
     state.result_.name_ = std::move(state.id_content_);

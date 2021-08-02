@@ -21,7 +21,7 @@ struct kw_edge : seq<TAO_PEGTL_ISTRING("edge"), not_at<string_other>> {};
 struct kw_graph : seq<TAO_PEGTL_ISTRING("graph"), not_at<string_other>> {};
 struct kw_digraph : seq<TAO_PEGTL_ISTRING("digraph"), not_at<string_other>> {};
 struct kw_subgraph : seq<TAO_PEGTL_ISTRING("subgraph"), not_at<string_other>> {};
-struct kw_strict : seq<TAO_PEGTL_ISTRING("strict"), not_at<string_other>> {};
+struct kw_strict : seq<TAO_PEGTL_ISTRING("strict"), not_at<string_other>> {};       // forbids creation of multi-edges
 struct keyword
     : sor<kw_node, kw_edge, kw_graph, kw_digraph, kw_subgraph, kw_strict> {};       // keyword can be any of the above (i.e. "n" "o" "d" "e")
 
@@ -38,14 +38,15 @@ struct id : sor<idstring, numeral, dqstring> {};                                
 
 // Operators and comments
 struct edge_op : sor<string<'-', '>'>, string<'-', '-'>> {};
-struct line_comment : seq<sor<two<'/'>, one<'#'>>, until<eol>> {};
-struct block_comment : seq<string<'/', '*'>, until<string<'*', '/'>>> {};
-struct comment : sor<line_comment, block_comment> {};
+struct line_comment : seq<sor<two<'/'>, one<'#'>>, until<eol>> {};                  // line comment starts with // or #
+struct block_comment : seq<string<'/', '*'>, until<string<'*', '/'>>> {};           // block comment is enclosed within a /*...*/
+struct comment : sor<line_comment, block_comment> {};                               // comment is either line or block
 
 // Allowed separators
-struct sep : sor<ws, comment> {};
-struct seps : star<sep> {};
+struct sep : sor<ws, comment> {};                                                   // seperators include whitespace or comments
+struct seps : star<sep> {};                                                         // seperators can include 0 or more sep
 
+// enable whitespaces throughout the entire grammar file
 // https://stackoverflow.com/questions/53427551/pegtl-how-to-skip-spaces-for-the-entire-grammar
 template <typename Separator, typename... Rules> struct interleaved;
 
@@ -61,7 +62,7 @@ template <typename... Rules> using sseq = interleaved<seps, Rules...>;
 // Prevents running actions if backtracking would occur
 template <typename... Rules> using guarded = seq<at<Rules...>, Rules...>;
 
-// Core grammar
+// Core grammar (from https://www.graphviz.org/pdf/dotguide.pdf pg34)
 struct stmt_list;
 struct a_list_key : seq<id> {};
 struct a_list_value : seq<id> {};

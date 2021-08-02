@@ -30,9 +30,9 @@ int main(int argc, char **argv) {
       {{"lhs", RuleSide::LHS}, {"rhs", RuleSide::RHS}}, RuleSide::LHS,
       args::Options::Required);
   args::Flag render_flag(parser, "render", "Render to a window",
-                         {'r', "render"});
+                         {'r', "render"});                              // REMOVE THIS DON'T NEED RENDERING
   args::ValueFlag<std::string> save_image_flag(
-      parser, "save_image", "Save PNG image to file", {"save_image"});
+      parser, "save_image", "Save PNG image to file", {"save_image"});  // REMOVE THIS DON'T HAVE IMAGES
 
   // Don't show the (overly verbose) message about the '--' flag
   parser.helpParams.showTerminator = false;
